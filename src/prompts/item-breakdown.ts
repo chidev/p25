@@ -1,39 +1,6 @@
 export const getItemPrompt = (item: string) => {
   return {
     model: 'sonar-deep-research',
-    // response_format: {
-    //   type: 'json_schema',
-    //   json_schema: {
-    //     schema: {
-    //       type: 'object',
-    //       properties: {
-    //         list: {
-    //           type: 'array',
-    //           items: {
-    //             type: 'object',
-    //             properties: {
-    //               agenda_item_title: { type: 'string' },
-    //               agenda_item_description: { type: 'string' },
-    //               progress_score: { type: 'number', minimum: 1, maximum: 100 },
-    //               sub_topics: {
-    //                 type: 'array',
-    //                 items: {
-    //                   type: 'object',
-    //                   properties: {
-    //                     title: { type: 'string' },
-    //                     description: { type: 'string' },
-    //                   },
-    //                 },
-    //               },
-    //               reasoning: { type: 'string' },
-    //               status_overview: { type: 'string' },
-    //             },
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
     messages: [
       {
         content: [
@@ -41,7 +8,8 @@ export const getItemPrompt = (item: string) => {
           'You have a background in consitutional law and are familiar with the legal and ethical implications of policy decisions.',
           'Rules:',
           '',
-          '- For each agenda item, provide the title, description, key initiatives, progress, status, why it matters, and sources.',
+          '- Provide the title, description, key initiatives, progress, status, why it matters, and sources.',
+          '- The status and why it matters sections should be 3-5 bullet points each.',
           '- Do not include the agenda item number in your response.',
           '- Do not include a conclusion in your response.',
           '- Speak in language a 5 year old can understand.',
@@ -51,39 +19,32 @@ export const getItemPrompt = (item: string) => {
           '# Agenda Item Title**',
           '## Progress**: 50/100',
           '---',
-          '**Agenda Item Description**',
-          '**Key initiatives**: Sub-topic 1, Sub-topic 2, (list as many relevant supporting topics as needed)',
-          '**Status**: Explanation of what has been accomplished so far',
-          '**Why it matters**: How it affects your rights, your community, your country, legality and ethics',
+          'Agenda Item Description, describe the purpose of this agenda item as described by Project 2025 and its stated goals and intetions for this item',
+          '',
+          '## Key initiatives:',
+          '- Bullet point list of Sub-topic 1, Sub-topic 2, (list as many relevant supporting topics as needed)',
+          '',
+          '## Status:',
+          '- Bullet point list of what has been accomplished so far',
+          '',
+          '## Why it matters:',
+          '- How it affects your rights',
+          '- How it affects your community',
+          '- How it affects your country',
+          '- How it affects the economy, wages',
+          '- legality and ethics',
           '---',
           '**Sources**: [1][2][3]',
         ].join('\n'),
         role: 'system',
       },
-      // {
-      //   content: [
-      //     'You are a research assistant tasked with tracking the progress of Project 2025 agenda items.',
-      //     'Please provide a JSON response with the following fields: agenda_item_title, agenda_item_description,',
-      //     'progress_score, sub_topics, reasoning, status_overview. The progress_score should be a number from 1-100.',
-      //     'Explain why you came to the conclusion in the reasoning field and give a',
-      //     'brief overview of current status in the status_overview field.',
-      //   ].join(' '),
-      //   role: 'system',
-      // },
       {
         role: 'user',
         content: `Get the current progress of project 2025 for agenda item: ${item}`,
       },
-      // {
-      //   role: 'assistant',
-      //   content:
-      //     "Federal Workforce Restructuring (Schedule F): Replacing merit-based workers with loyalists. Mentioned in 1, 2, 3. Progress could be high since it's started via executive orders.  Immigration Enforcement Expansion: Mass deportations using military, DHS restructuring. Covered in 1, 2, 3, 4. Some actions started but logistical challenges.  Tax Code Overhaul: Flat tax, corporate tax cuts. From 1, 2. Requires legislation, so lower progress.  Climate Deregulation: Exiting Paris Agreement, expanding drilling. In 1, 2, progress might be advanced via executive actions.  DEI Program Elimination: Terminating diversity initiatives across agencies. Started in DoD and Education per 2, 3.  Healthcare Rollbacks: Ending Medicare negotiations, Medicaid work requirements. From 1, 3. Some FDA actions but legislative hurdles.  Education Privatization: Dismantling Dept of Education, school vouchers. Funds shifted per 1, but legal delays.  TikTok Ban: Forcing divestiture or ban. CFIUS actions mentioned in 2, high progress.  Federal Agency Consolidation: Abolishing DHS, merging agencies. Needs Congress approval, low progress.  Social Policy Enforcement: Criminalizing pornography, restricting abortion. DOJ task force started but legal challenges.",
-      // },
-      // { role: 'user', content: 'Now provide the structured output of their progress on a scale from 1-100' },
     ],
     return_images: false,
     return_related_questions: false,
     search_recency_filter: 'month',
-    // stream: true,
   }
 }

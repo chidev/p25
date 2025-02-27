@@ -34,7 +34,7 @@ function writeReport(args: ReportArgs) {
     .replace(/:/g, '-')
 
   fs.writeFileSync(`./reports/${name}-${date}.md`, report)
-  fs.writeFileSync(`./reports/debug-${name}-${date}.md`, JSON.stringify(response, null, 2))
+  fs.writeFileSync(`./reports/debug-${name}-${date}.json`, JSON.stringify(response, null, 2))
 }
 
 async function getList() {

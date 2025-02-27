@@ -15,7 +15,12 @@ export const getData = async (args?: { item?: string }) => {
   }
 
   return await fetch('https://api.perplexity.ai/chat/completions', options)
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`${response.status} - ${response.statusText}`)
+      }
+      return response.json()
+    })
     .then((response) => {
       console.log(response)
       const footer = response.citations.map((c, i) => `[${i + 1}] ${c}`).join('\n\n')
