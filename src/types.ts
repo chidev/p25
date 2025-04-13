@@ -20,6 +20,7 @@ export interface ApiMetadata {
   citationTokens: number // Number of tokens in citations
   numSearchQueries: number // Number of search queries
   reasoningTokens: number // Number of tokens in reasoning
+  aiAnalysis?: string // AI model used for content analysis (if applicable)
 }
 
 // Agenda item structure

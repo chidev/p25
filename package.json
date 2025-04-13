@@ -21,6 +21,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "gray-matter": "^4.0.3",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",

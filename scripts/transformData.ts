@@ -5,6 +5,12 @@ import type { Root, Heading, Paragraph, List, ListItem, Text, Code, HTML } from 
 import matter from 'gray-matter'
 import winston from 'winston'
 import * as types from '../src/types'
+import dotenv from 'dotenv'
+import fs from 'fs'
+import path from 'path'
+
+// Load environment variables from .env file
+dotenv.config()
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -19,8 +25,6 @@ const logger = winston.createLogger({
 })
 
 // Ensure logs directory exists
-import fs from 'fs'
-import path from 'path'
 if (!fs.existsSync('logs')) {
   fs.mkdirSync('logs')
 }
@@ -183,12 +187,103 @@ function extractAgendaItems(content: string, sources: types.Source[]): types.Age
 }
 
 /**
+ * Analyzes content using AI to extract progress, status, and impact
+ * @param content The markdown content to analyze
+ * @returns Object containing progress, status, and impact
+ */
+async function analyzeContentWithAI(content: string): Promise<{ progress: number; status: string; impact: string }> {
+  try {
+    logger.info('Analyzing content with AI')
+
+    // Prepare a concise version of the content for analysis
+    // Limit to first 4000 characters to keep costs low
+    const truncatedContent = content.substring(0, 4000)
+
+    const prompt = {
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are an AI assistant that analyzes report content and extracts key information. Respond only with a JSON object containing the requested fields.',
+        },
+        {
+          role: 'user',
+          content: `Analyze the following report content and extract:
+1. Progress: A number from 0-100 representing completion percentage.
+2. Status: A concise summary of the current status (1-2 sentences).
+3. Impact: A concise explanation of why this matters (3-4 sentences). Focus on the most important aspects.
+
+Return ONLY a JSON object with these three fields.
+
+CONTENT:
+${truncatedContent}`,
+        },
+      ],
+      response_format: { type: 'json_object' },
+    }
+
+    // Use environment variable for API key
+    const apiKey = process.env.OPENAI_API_KEY || 'your-default-key-here'
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prompt),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      logger.error(`AI analysis failed: ${response.status} - ${errorText}`)
+      throw new TransformationError(`AI analysis failed: ${response.status}`)
+    }
+
+    const result = await response.json()
+    const aiResponse = JSON.parse(result.choices[0].message.content)
+
+    console.log('aiResponse')
+    console.log(aiResponse)
+
+    logger.info('AI analysis completed successfully')
+
+    // Extract progress from AI response or default to 0
+    let progress = typeof aiResponse.progress === 'number' ? aiResponse.progress : 0
+
+    // If AI couldn't determine progress, try to extract it from the content using regex
+    if (progress === 0) {
+      const progressMatch = content.match(/Progress:?\s*(\d+)%/i) || content.match(/(\d+)%\s*complete/i)
+      if (progressMatch) {
+        progress = parseInt(progressMatch[1], 10)
+        logger.info(`Extracted progress from content using regex: ${progress}%`)
+      }
+    }
+
+    return {
+      progress,
+      status: aiResponse.status || 'Status not determined by AI',
+      impact: aiResponse.impact || 'Impact not determined by AI',
+    }
+  } catch (error) {
+    logger.error(`AI analysis error: ${error instanceof Error ? error.message : String(error)}`)
+    // Return default values if AI analysis fails
+    return {
+      progress: 0,
+      status: 'Status could not be determined (AI analysis failed)',
+      impact: 'Impact could not be determined (AI analysis failed)',
+    }
+  }
+}
+
+/**
  * Extracts a single agenda item from item report content
  * @param content The markdown content
  * @param sources The extracted sources
  * @returns AgendaItem object
  */
-function extractAgendaItem(content: string, sources: types.Source[]): types.AgendaItem {
+async function extractAgendaItem(content: string, sources: types.Source[]): Promise<types.AgendaItem> {
   // Extract title from the first heading
   const titleMatch = content.match(/# (.+?)(?=\n)/)
   if (!titleMatch) throw new TransformationError('Could not extract title from item report')
@@ -199,31 +294,48 @@ function extractAgendaItem(content: string, sources: types.Source[]): types.Agen
   if (!descriptionMatch) throw new TransformationError('Could not extract description from item report')
   const description = descriptionMatch[1].trim()
 
-  // Extract status from the content (this is more complex and might need refinement)
-  const statusMatch = content.match(/## (?:Status|Progress).*?\n\n(.+?)(?=\n\n##|\n*$)/s)
-  const status = statusMatch ? statusMatch[1].trim() : 'Status not explicitly stated'
-
-  // Extract impact from the conclusion
-  const impactMatch = content.match(/## Conclusion\n\n(.+?)(?=\n\n---|\n*$)/s)
-  const impact = impactMatch ? impactMatch[1].trim() : 'Impact not explicitly stated'
-
-  // Determine progress (this is a heuristic and might need refinement)
-  let progress = 0
-  const progressMatch = content.match(/Progress:?\s*(\d+)%/i) || content.match(/(\d+)%\s*complete/i)
-  if (progressMatch) {
-    progress = parseInt(progressMatch[1], 10)
-  }
-
   // Extract source indices (all sources are potentially relevant)
   const sourceIndices = sources.map((s) => s.index)
 
-  return {
-    title,
-    description,
-    progress,
-    status,
-    impact,
-    sourceIndices,
+  try {
+    // Use AI to analyze content and extract progress, status, and impact
+    const aiAnalysis = await analyzeContentWithAI(content)
+
+    return {
+      title,
+      description,
+      progress: aiAnalysis.progress,
+      status: aiAnalysis.status,
+      impact: aiAnalysis.impact,
+      sourceIndices,
+    }
+  } catch (error) {
+    logger.warn(`AI analysis failed, falling back to regex extraction: ${error instanceof Error ? error.message : String(error)}`)
+
+    // Fallback to regex extraction if AI analysis fails
+    // Extract status from the content (this is more complex and might need refinement)
+    const statusMatch = content.match(/## (?:Status|Progress).*?\n\n(.+?)(?=\n\n##|\n*$)/s)
+    const status = statusMatch ? statusMatch[1].trim() : 'Status not explicitly stated'
+
+    // Extract impact from the conclusion
+    const impactMatch = content.match(/## Conclusion\n\n(.+?)(?=\n\n---|\n*$)/s)
+    const impact = impactMatch ? impactMatch[1].trim() : 'Impact not explicitly stated'
+
+    // Determine progress (this is a heuristic and might need refinement)
+    let progress = 0
+    const progressMatch = content.match(/Progress:?\s*(\d+)%/i) || content.match(/(\d+)%\s*complete/i)
+    if (progressMatch) {
+      progress = parseInt(progressMatch[1], 10)
+    }
+
+    return {
+      title,
+      description,
+      progress,
+      status,
+      impact,
+      sourceIndices,
+    }
   }
 }
 
@@ -336,6 +448,7 @@ export async function transformMarkdownToJson(content: string, filename: string)
         citationTokens: frontmatter.citationTokens || 0,
         numSearchQueries: frontmatter.numSearchQueries || 0,
         reasoningTokens: frontmatter.reasoningTokens || 0,
+        aiAnalysis: reportType === 'item' ? 'gpt-3.5-turbo' : undefined, // Track when AI analysis is used
       },
     }
 
@@ -352,9 +465,8 @@ export async function transformMarkdownToJson(content: string, filename: string)
           agendaItems,
         }
         break
-
       case 'item':
-        const agendaItem = extractAgendaItem(cleanedContent, sources)
+        const agendaItem = await extractAgendaItem(cleanedContent, sources)
         logger.info(`Extracted agenda item: ${agendaItem.title}`)
         report = {
           ...baseReport,

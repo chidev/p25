@@ -18,6 +18,7 @@ export const apiMetadataSchema = z.object({
   citationTokens: z.number().int().nonnegative(),
   numSearchQueries: z.number().int().nonnegative(),
   reasoningTokens: z.number().int().nonnegative(),
+  aiAnalysis: z.string().optional(), // AI model used for content analysis (if applicable)
 })
 
 // Type is imported from src/types.ts
