@@ -1,9 +1,15 @@
 import { body as list } from './prompts/key-list'
 import { getItemPrompt } from './prompts/item-breakdown'
+import { ds } from './prompts/deepseek'
 
-export const getData = async (args?: { item?: string }) => {
-  const { item } = args || {}
-  const body = item ? getItemPrompt(item) : list
+export const getData = async (args?: { item?: string; prompt?: any }) => {
+  const { item, prompt } = args || {}
+  let body = item ? getItemPrompt(item) : list
+  if (prompt) {
+    body = prompt
+  }
+
+  console.log(body)
 
   const options = {
     method: 'POST',
@@ -23,7 +29,7 @@ export const getData = async (args?: { item?: string }) => {
     })
     .then((response) => {
       console.log(response)
-      const footer = response.citations.map((c, i) => `[${i + 1}] ${c}`).join('\n\n')
+      const footer = response.citations.map((c: string, i: number) => `[${i + 1}] ${c}`).join('\n\n')
       const report = `${response.choices[0].message.content}\n---\n${footer}`
 
       return { report, response }

@@ -1,0 +1,58 @@
+2025-04-13T16:47:59.598Z info: Creating directory test-dir
+2025-04-13T16:47:59.601Z info: Directory test-dir exists
+2025-04-13T16:47:59.601Z info: Emptying directory test-dir
+2025-04-13T16:47:59.601Z info: Reading markdown files from ./src/prompts
+2025-04-13T16:47:59.602Z info: Processing 2 files
+2025-04-13T16:47:59.602Z info: Processed file file1.ts
+2025-04-13T16:48:14.366Z info: Starting data fetching process
+2025-04-13T16:48:14.368Z info: Directory ./reports exists
+2025-04-13T16:48:14.368Z info: Directory ./data exists
+2025-04-13T16:48:14.369Z info: First run detected
+2025-04-13T16:48:14.369Z info: Emptying directory ./reports
+2025-04-13T16:48:14.370Z info: Emptying directory ./data
+2025-04-13T16:48:14.371Z info: Creating first run flag
+2025-04-13T16:48:14.371Z info: Reading markdown files from ./src/prompts
+2025-04-13T16:48:14.372Z info: Found 4 markdown files
+2025-04-13T16:48:14.372Z info: Processing 4 files
+2025-04-13T16:48:14.373Z info: Processed file item-breakdown.ts
+2025-04-13T16:48:14.373Z info: Processed file deepseek.ts
+2025-04-13T16:48:14.374Z info: Processed file solana.ts
+2025-04-13T16:48:14.374Z info: Processed file key-list.ts
+2025-04-13T16:48:14.374Z info: Data fetching process completed successfully
+2025-04-13T16:48:37.446Z info: Starting data fetching process
+2025-04-13T16:48:37.447Z info: Directory ./reports exists
+2025-04-13T16:48:37.447Z info: Directory ./data exists
+2025-04-13T16:48:37.448Z info: Not the first run
+2025-04-13T16:48:37.448Z info: Reading markdown files from ./src/prompts
+2025-04-13T16:48:37.450Z info: Found 4 markdown files
+2025-04-13T16:48:37.450Z info: Processing 4 files
+2025-04-13T16:48:37.451Z info: Processed file item-breakdown.ts
+2025-04-13T16:48:37.451Z info: Processed file deepseek.ts
+2025-04-13T16:48:37.451Z info: Processed file solana.ts
+2025-04-13T16:48:37.452Z info: Processed file key-list.ts
+2025-04-13T16:48:37.452Z info: Data fetching process completed successfully
+2025-04-13T16:48:51.289Z info: Starting data fetching process
+2025-04-13T16:48:51.290Z info: Directory ./reports exists
+2025-04-13T16:48:51.291Z info: Directory ./data exists
+2025-04-13T16:48:51.291Z info: Not the first run
+2025-04-13T16:48:51.291Z info: Reading markdown files from ./src/prompts
+2025-04-13T16:48:51.294Z info: Found 4 markdown files
+2025-04-13T16:48:51.294Z info: Processing 4 files
+2025-04-13T16:48:51.294Z info: Processed file item-breakdown.ts
+2025-04-13T16:48:51.294Z info: Processed file deepseek.ts
+2025-04-13T16:48:51.295Z info: Processed file solana.ts
+2025-04-13T16:48:51.295Z info: Processed file key-list.ts
+2025-04-13T16:48:51.295Z info: Data fetching process completed successfully
+2025-04-13T17:42:45.459Z info: Starting data fetching process
+2025-04-13T17:42:45.461Z info: Directory ./reports exists
+2025-04-13T17:42:45.461Z info: Directory ./data exists
+2025-04-13T17:42:45.461Z info: Emptying directory ./reports
+2025-04-13T17:42:45.464Z info: Emptying directory ./data
+2025-04-13T17:42:45.464Z info: Reading markdown files from ./src/prompts
+2025-04-13T17:42:45.466Z info: Found 4 markdown files
+2025-04-13T17:42:45.466Z info: Processing 4 files
+2025-04-13T17:42:45.466Z info: Processed file item-breakdown.ts
+2025-04-13T17:42:45.467Z info: Processed file deepseek.ts
+2025-04-13T17:42:45.467Z info: Processed file solana.ts
+2025-04-13T17:42:45.468Z info: Processed file key-list.ts
+2025-04-13T17:42:45.468Z info: Data fetching process completed successfully

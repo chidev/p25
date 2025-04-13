@@ -16,8 +16,9 @@ type ReportArgs = {
   data: { report: string; response: object } | void
   name: string
 }
-// function to write list or item report + debug to file
-function writeReport(args: ReportArgs) {
+
+// Modified function to log report instead of writing to file
+function logReport(args: ReportArgs) {
   const { data, name } = args
 
   if (!data) {
@@ -38,8 +39,11 @@ function writeReport(args: ReportArgs) {
     .replace(/[/, ]/g, '-')
     .replace(/:/g, '-')
 
-  fs.writeFileSync(`./reports/${name}-${date}.md`, report)
-  fs.writeFileSync(`./reports/debug-${name}-${date}.json`, JSON.stringify(response, null, 2))
+  console.log(`\n--- ${name}-${date}.md ---`)
+  console.log(report)
+  console.log(`\n--- debug-${name}-${date}.json ---`)
+  console.log(JSON.stringify(response, null, 2))
+  console.log('\n')
 }
 
 async function getList() {
@@ -47,7 +51,7 @@ async function getList() {
 
   const data = await getData()
 
-  writeReport({ data, name: 'list' })
+  logReport({ data, name: 'list' })
 }
 
 async function getItem(i: number) {
@@ -57,7 +61,7 @@ async function getItem(i: number) {
 
   const data = await getData({ item })
 
-  writeReport({ data, name: `item-${i}` })
+  logReport({ data, name: `item-${i}` })
 }
 
 async function getTopic(topic: string) {
@@ -82,7 +86,7 @@ async function getTopic(topic: string) {
   }
 
   const data = await getData({ prompt })
-  writeReport({ data, name: topic })
+  logReport({ data, name: topic })
 }
 
 async function main() {
