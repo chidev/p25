@@ -156,34 +156,116 @@ function extractSources(content: string): types.Source[] {
  * @param sources The extracted sources
  * @returns Array of AgendaItem objects
  */
-function extractAgendaItems(content: string, sources: types.Source[]): types.AgendaItem[] {
-  const agendaItems: types.AgendaItem[] = []
-  const agendaItemRegex =
-    /## \*\*\d+\. (.+?)\*\*\n\n\*\*Progress: (\d+)\/100\*\*\s+\n\*\*What\*\*: (.+?)\s+\n\*\*Status\*\*: (.+?)\s+\n\*\*Why it matters\*\*: (.+?)\s+\n\*\*Sources\*\*: (.+?)(?=\n\n---|\n*$)/gs
+async function extractAgendaItems(content: string, sources: types.Source[], model: string): Promise<types.AgendaItem[]> {
+  try {
+    logger.info('Extracting agenda items from list report content')
 
-  let match
-  while ((match = agendaItemRegex.exec(content)) !== null) {
-    const title = match[1].trim()
-    const progress = parseInt(match[2], 10)
-    const description = match[3].trim()
-    const status = match[4].trim()
-    const impact = match[5].trim()
+    // Prepare a concise version of the content for analysis
+    // Limit to first 8000 characters to keep costs low
+    // const truncatedContent = content.substring(0, 8000)
 
-    // Extract source indices from the sources text
-    const sourcesText = match[6].trim()
-    const sourceIndices = sourcesText.match(/\[(\d+)\]/g)?.map((s) => parseInt(s.slice(1, -1), 10)) || []
+    const prompt = {
+      model,
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You are an AI assistant that analyzes report content and extracts agenda items. Respond only with a JSON array containing the requested fields for each agenda item.',
+        },
+        {
+          role: 'user',
+          content: `Analyze the following report content and extract all agenda items. For each agenda item, provide:
+1. title: The full title of the agenda item.
+2. description: The full description of the agenda item.
+3. progress: A number from 0-100 representing completion percentage.
+4. status: A concise summary of the current status (1-2 sentences).
+5. impact: A concise explanation of why this matters (2-3 sentences).
 
-    agendaItems.push({
-      title,
-      description,
-      progress,
-      status,
-      impact,
-      sourceIndices,
+Return ONLY a JSON array of objects with these five fields for each agenda item you identify in their original order.
+
+CONTENT:
+${content}`,
+        },
+      ],
+      response_format: { type: 'json_object' },
+    }
+
+    // Use environment variable for API key
+    const apiKey = process.env.OPENAI_API_KEY || 'your-default-key-here'
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prompt),
     })
-  }
 
-  return agendaItems
+    if (!response.ok) {
+      const errorText = await response.text()
+      logger.error(`AI analysis failed: ${response.status} - ${errorText}`)
+      throw new TransformationError(`AI analysis failed: ${response.status}`)
+    }
+
+    const result = await response.json()
+    const { agendaItems: aiResponse } = JSON.parse(result.choices[0].message.content)
+
+    fs.writeFileSync('./reports/debug-list-result.json', JSON.stringify(result, null, 2))
+    fs.writeFileSync('./reports/debug-list-aiResponse.json', JSON.stringify(aiResponse, null, 2))
+
+    logger.info(`AI analysis identified ${Array.isArray(aiResponse) ? aiResponse.length : 0} agenda items`)
+
+    // Map the AI response to AgendaItem objects
+    const agendaItems: types.AgendaItem[] = []
+
+    if (!Array.isArray(aiResponse)) {
+      return []
+    }
+
+    console.log('AI response:')
+    console.log('AI response:')
+    console.log('AI response:')
+    console.log('AI response:')
+    console.log('AI response:')
+    console.log('AI response:')
+    console.log('AI response:', aiResponse)
+
+    for (const item of aiResponse) {
+      // Determine sourceIndices by matching keywords from the item to sources
+      const sourceIndices: number[] = []
+
+      // Extract keywords from the item title and description
+      const keywords = [
+        ...(item.title?.toLowerCase().split(/\s+/) || []),
+        ...(item.description?.toLowerCase().split(/\s+/) || []),
+      ].filter((word) => word.length > 4) // Only use words longer than 4 characters as keywords
+
+      // Check each source for matching keywords
+      sources.forEach((source) => {
+        // If any keyword is found in the source URL, add the source index
+        if (keywords.some((keyword) => source.url.toLowerCase().includes(keyword))) {
+          sourceIndices.push(source.index)
+        }
+      })
+
+      agendaItems.push({
+        title: item.title || 'Untitled Agenda Item',
+        description: item.description || 'No description provided',
+        progress: typeof item.progress === 'number' ? item.progress : 0,
+        status: item.status || 'Status not determined',
+        impact: item.impact || 'Impact not determined',
+        sourceIndices: sourceIndices.length > 0 ? sourceIndices : sources.map((s) => s.index), // If no matches, include all sources
+      })
+    }
+
+    logger.info(`Successfully mapped ${agendaItems.length} agenda items`)
+    return agendaItems
+  } catch (error) {
+    logger.error(`Error extracting agenda items: ${error instanceof Error ? error.message : String(error)}`)
+    // Return an empty array if extraction fails
+    return []
+  }
 }
 
 /**
@@ -191,7 +273,10 @@ function extractAgendaItems(content: string, sources: types.Source[]): types.Age
  * @param content The markdown content to analyze
  * @returns Object containing progress, status, and impact
  */
-async function analyzeContentWithAI(content: string): Promise<{ progress: number; status: string; impact: string }> {
+async function analyzeContentWithAI(
+  content: string,
+  model: string
+): Promise<{ progress: number; status: string; impact: string }> {
   try {
     logger.info('Analyzing content with AI')
 
@@ -200,7 +285,7 @@ async function analyzeContentWithAI(content: string): Promise<{ progress: number
     const truncatedContent = content.substring(0, 4000)
 
     const prompt = {
-      model: 'gpt-3.5-turbo',
+      model,
       messages: [
         {
           role: 'system',
@@ -212,7 +297,7 @@ async function analyzeContentWithAI(content: string): Promise<{ progress: number
           content: `Analyze the following report content and extract:
 1. Progress: A number from 0-100 representing completion percentage.
 2. Status: A concise summary of the current status (1-2 sentences).
-3. Impact: A concise explanation of why this matters (3-4 sentences). Focus on the most important aspects.
+3. Impact: A concise explanation of why this matters (3-5 sentences). Focus on the most important aspects.
 
 Return ONLY a JSON object with these three fields.
 
@@ -244,13 +329,10 @@ ${truncatedContent}`,
     const result = await response.json()
     const aiResponse = JSON.parse(result.choices[0].message.content)
 
-    console.log('aiResponse')
-    console.log(aiResponse)
-
-    logger.info('AI analysis completed successfully')
+    logger.info('AI analysis completed successfully', aiResponse)
 
     // Extract progress from AI response or default to 0
-    let progress = typeof aiResponse.progress === 'number' ? aiResponse.progress : 0
+    let progress = aiResponse.progress || aiResponse.Progress || 0
 
     // If AI couldn't determine progress, try to extract it from the content using regex
     if (progress === 0) {
@@ -263,8 +345,8 @@ ${truncatedContent}`,
 
     return {
       progress,
-      status: aiResponse.status || 'Status not determined by AI',
-      impact: aiResponse.impact || 'Impact not determined by AI',
+      status: aiResponse.status || aiResponse.Status || 'Status not determined by AI',
+      impact: aiResponse.impact || aiResponse.Impact || 'Impact not determined by AI',
     }
   } catch (error) {
     logger.error(`AI analysis error: ${error instanceof Error ? error.message : String(error)}`)
@@ -283,7 +365,7 @@ ${truncatedContent}`,
  * @param sources The extracted sources
  * @returns AgendaItem object
  */
-async function extractAgendaItem(content: string, sources: types.Source[]): Promise<types.AgendaItem> {
+async function extractAgendaItem(content: string, sources: types.Source[], model: string): Promise<types.AgendaItem> {
   // Extract title from the first heading
   const titleMatch = content.match(/# (.+?)(?=\n)/)
   if (!titleMatch) throw new TransformationError('Could not extract title from item report')
@@ -299,7 +381,7 @@ async function extractAgendaItem(content: string, sources: types.Source[]): Prom
 
   try {
     // Use AI to analyze content and extract progress, status, and impact
-    const aiAnalysis = await analyzeContentWithAI(content)
+    const aiAnalysis = await analyzeContentWithAI(content, model)
 
     return {
       title,
@@ -441,14 +523,14 @@ export async function transformMarkdownToJson(content: string, filename: string)
       content: cleanedContent,
       sources,
       apiMetadata: {
-        model: frontmatter.model || 'unknown',
+        model: reportType === 'item' ? 'gpt-3.5-turbo' : 'gpt-4o-mini',
         promptTokens: frontmatter.promptTokens || 0,
         completionTokens: frontmatter.completionTokens || 0,
         totalTokens: frontmatter.totalTokens || 0,
         citationTokens: frontmatter.citationTokens || 0,
         numSearchQueries: frontmatter.numSearchQueries || 0,
         reasoningTokens: frontmatter.reasoningTokens || 0,
-        aiAnalysis: reportType === 'item' ? 'gpt-3.5-turbo' : undefined, // Track when AI analysis is used
+        aiAnalysis: reportType === 'item' ? 'gpt-3.5-turbo' : 'gpt-4o-mini', // Track when AI analysis is used
       },
     }
 
@@ -457,7 +539,7 @@ export async function transformMarkdownToJson(content: string, filename: string)
 
     switch (reportType) {
       case 'list':
-        const agendaItems = extractAgendaItems(cleanedContent, sources)
+        const agendaItems = await extractAgendaItems(cleanedContent, sources, baseReport.apiMetadata.model)
         logger.info(`Extracted ${agendaItems.length} agenda items for list report`)
         report = {
           ...baseReport,
@@ -466,7 +548,7 @@ export async function transformMarkdownToJson(content: string, filename: string)
         }
         break
       case 'item':
-        const agendaItem = await extractAgendaItem(cleanedContent, sources)
+        const agendaItem = await extractAgendaItem(cleanedContent, sources, baseReport.apiMetadata.model)
         logger.info(`Extracted agenda item: ${agendaItem.title}`)
         report = {
           ...baseReport,
@@ -505,6 +587,8 @@ export async function transformMarkdownToJson(content: string, filename: string)
       default:
         throw new TransformationError(`Unsupported report type: ${reportType}`)
     }
+
+    fs.writeFileSync('data/debug-report.json', JSON.stringify(report, null, 2))
 
     // Validate the report structure
     try {

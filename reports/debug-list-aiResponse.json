@@ -1,0 +1,72 @@
+[
+  {
+    "title": "Dismantling Federal Agencies",
+    "description": "Project 2025 aims to eliminate or merge federal agencies, including the Department of Education, Environmental Protection Agency (EPA), and Department of Homeland Security (DHS), to reduce bureaucratic influence. Key initiatives include executive orders to dismantle agencies and replace career staff with political appointees.",
+    "progress": 60,
+    "status": "The Department of Education has been targeted via executive order, though congressional action is required for full elimination. The Consumer Financial Protection Bureau (CFPB) faced temporary staff suspensions, but court rulings reinstated employees.",
+    "impact": "These changes risk destabilizing public services, from student loan oversight to environmental protections, while centralizing power under executive control."
+  },
+  {
+    "title": "Immigration Overhaul",
+    "description": "The agenda prioritizes mass deportations, border wall construction, and military deployment to enforce immigration policies.",
+    "progress": 40,
+    "status": "While military resources have been redirected to border operations, legislative hurdles and court injunctions have delayed large-scale deportations. Executive orders align with Project 2025’s vision, but implementation remains partial.",
+    "impact": "Harsh immigration policies threaten human rights, strain international relations, and disrupt communities."
+  },
+  {
+    "title": "Environmental Policy Rollbacks",
+    "description": "Exiting the Paris Agreement and promoting fossil fuel development are central to this agenda.",
+    "progress": 20,
+    "status": "No formal withdrawal from the Paris Agreement has occurred, but regulatory rollbacks for oil and gas projects have accelerated. The EPA’s budget cuts have hampered climate initiatives.",
+    "impact": "These actions exacerbate climate change, endanger public health, and slow the transition to renewable energy."
+  },
+  {
+    "title": "Tax Reform",
+    "description": "Implementing a flat tax and cutting corporate taxes are key goals.",
+    "progress": 30,
+    "status": "The House and Senate are negotiating budget resolutions to extend Trump-era tax cuts, but disagreements over spending reductions have stalled progress.",
+    "impact": "Corporate tax cuts could widen wealth inequality, while flat taxes may disproportionately burden low-income households."
+  },
+  {
+    "title": "Civil Service Overhaul",
+    "description": "Replacing merit-based federal workers with political loyalists via Schedule F appointments.",
+    "progress": 50,
+    "status": "The administration reinstated Schedule F, enabling mass reclassifications of civil servants. Courts have temporarily blocked dismissals at agencies like the CFPB and Voice of America.",
+    "impact": "Politicizing the civil service undermines institutional expertise and enables cronyism."
+  },
+  {
+    "title": "Social Policies",
+    "description": "Rolling back LGBTQ+ rights and diversity, equity, and inclusion (DEI) initiatives.",
+    "progress": 70,
+    "status": "Federal DEI programs have been defunded, and anti-LGBTQ+ policies are enforced in education and healthcare.",
+    "impact": "Marginalized groups face increased discrimination, and workplace diversity efforts are eroding."
+  },
+  {
+    "title": "Abortion and Reproductive Rights Restrictions",
+    "description": "Criminalizing abortion drugs and limiting federal funding for reproductive healthcare.",
+    "progress": 50,
+    "status": "The FDA’s approval of mifepristone is under legal threat, and federal investigations into emergency abortion care have been halted.",
+    "impact": "These restrictions endanger women’s health and access to critical medical services."
+  },
+  {
+    "title": "Education Reform",
+    "description": "Defunding public schools and expanding school choice programs.",
+    "progress": 40,
+    "status": "The Department of Education’s budget has been slashed, but congressional resistance has delayed voucher legislation.",
+    "impact": "Public education quality may decline, exacerbating inequities for low-income students."
+  },
+  {
+    "title": "Trade and Tariffs",
+    "description": "Imposing universal baseline tariffs and targeting Chinese imports.",
+    "progress": 30,
+    "status": "An executive order targeting Chinese shipbuilding and maritime sectors was issued, but broader tariff policies remain under discussion.",
+    "impact": "Trade wars could inflate consumer prices and destabilize global markets."
+  },
+  {
+    "title": "Law Enforcement Expansion",
+    "description": "Expanding the death penalty and deploying the military domestically.",
+    "progress": 10,
+    "status": "No significant legislative or executive actions have been taken yet.",
+    "impact": "Militarizing law enforcement risks civil liberties abuses and escalates systemic inequities."
+  }
+]

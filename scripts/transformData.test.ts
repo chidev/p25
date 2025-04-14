@@ -61,6 +61,9 @@ vi.mock('winston', async () => {
 })
 
 describe('transformData', () => {
+  // Mock fetch for AI calls
+  global.fetch = vi.fn()
+
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks()
@@ -98,6 +101,31 @@ describe('transformData', () => {
   describe('transformMarkdownToJson', () => {
     // Test for list report
     it('should transform list report markdown to JSON', async () => {
+      // Mock successful AI response for this test
+      const mockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify([
+                  {
+                    title: 'Agenda Item Title',
+                    description: 'Description of agenda item and key initiatives.',
+                    progress: 75,
+                    status: 'Current status and accomplishments.',
+                    impact: 'Impact on rights, economy, environment, etc.',
+                  },
+                ]),
+              },
+            },
+          ],
+        }),
+      }
+
+      // Mock fetch implementation for this test
+      vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
       const listMarkdown = `
 <think>
 Some internal reasoning
@@ -258,6 +286,88 @@ Some content without proper sections
       const result = await transformMarkdownToJson(malformedMarkdown, 'list-04-13--02-30-PM.md')
       expect(result.type).toBe('list')
       // Expect empty agenda items or default values
+      expect((result as schema.ListReport).agendaItems).toHaveLength(0)
+    })
+  })
+  describe('extractAgendaItems functionality', () => {
+    it('should extract agenda items from list report content', async () => {
+      // Mock successful AI response
+      const mockResponse = {
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify([
+                  {
+                    title: 'Agenda Item 1',
+                    description: 'Description of agenda item 1',
+                    progress: 75,
+                    status: 'In Progress',
+                    impact: 'High impact on policy',
+                  },
+                  {
+                    title: 'Agenda Item 2',
+                    description: 'Description of agenda item 2',
+                    progress: 25,
+                    status: 'To Do',
+                    impact: 'Medium impact on economy',
+                  },
+                ]),
+              },
+            },
+          ],
+        }),
+      }
+
+      // Mock fetch implementation
+      vi.mocked(global.fetch).mockResolvedValue(mockResponse as any)
+
+      // Sample list report content with agenda items
+      const listMarkdown = `
+# Project 2025 Agenda Items
+
+## Agenda Item 1
+Progress on this item has been significant.
+
+## Agenda Item 2
+This item is just getting started.
+
+## Sources
+[1] https://example.com/policy1
+[2] https://example.com/economy2
+    `
+
+      // Test through the public transformMarkdownToJson function
+      const result = await transformMarkdownToJson(listMarkdown, 'list-04-13--02-30-PM.md')
+
+      // Verify the results
+      expect(result.type).toBe('list')
+      expect((result as schema.ListReport).agendaItems).toHaveLength(2)
+      expect((result as schema.ListReport).agendaItems[0].title).toBe('Agenda Item 1')
+      expect((result as schema.ListReport).agendaItems[0].progress).toBe(75)
+      expect((result as schema.ListReport).agendaItems[1].title).toBe('Agenda Item 2')
+      expect((result as schema.ListReport).agendaItems[1].progress).toBe(25)
+    })
+
+    it('should handle AI analysis errors gracefully for list reports', async () => {
+      // Mock failed AI response
+      vi.mocked(global.fetch).mockRejectedValue(new Error('API error'))
+
+      // Simple list report content
+      const listMarkdown = `
+# Project 2025 Agenda Items
+Some content about agenda items.
+
+## Sources
+[1] https://example.com/source1
+    `
+
+      // Test through the public transformMarkdownToJson function
+      const result = await transformMarkdownToJson(listMarkdown, 'list-04-13--02-30-PM.md')
+
+      // Verify the results - should have empty agendaItems array on error
+      expect(result.type).toBe('list')
       expect((result as schema.ListReport).agendaItems).toHaveLength(0)
     })
   })

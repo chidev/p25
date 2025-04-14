@@ -1,14 +1,14 @@
 export const list = [
   '**Dismantling Federal Agencies**: Eliminating Education, Homeland Security, EPA; merging others.',
   '**Immigration Overhaul**: Mass deportations, border wall, military deployment.',
-  '**Environmental Policy Rollbacks**: Exiting Paris Agreement, promoting fossil fuels.',
+  '**Environmental Policy Rollbacks**: Exiting Paris Agreement, promoting fossil fuels, any other environmental concerns.',
   '**Tax Reform**: Flat tax, corporate tax cuts.',
   '**Civil Service Overhaul**: Replace merit-based workers with loyalists.',
   '**Social Policies**: Anti-LGBTQ+ measures, anti-DEI initiatives.',
   '**Abortion and Reproductive Rights Restrictions**: Criminalizing abortion drugs, limiting federal funding.',
   '**Education Reform**: School choice, defunding public schools.',
-  '**Trade and Tariffs**: Universal baseline tariffs, targeting China.',
-  '**Law Enforcement Expansion**: Death penalty expansion, using military domestically.',
+  '**Trade and Tariffs**: Universal baseline tariffs, targeting China and other countries.',
+  '**Law Enforcement Expansion**: Death penalty expansion, using military domestically, ice expansion and activities.',
 ]
 
 export const body = {
@@ -58,6 +58,7 @@ export const body = {
         '- For each agenda item, provide the title, description, key initiatives, progress, status, why it matters, and sources.',
         '- The conclusion should be 2 sentences and highlight the current overall progress %.',
         '- Be concise and speak in language a 5 year old can understand.',
+        '- Feel free to expand on the topic, the examples listed in each item should warrant pulling up more related data.',
         '',
         'Formatting Example:',
         '',
