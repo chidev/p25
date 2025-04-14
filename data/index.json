@@ -1,0 +1,108 @@
+{
+  "items": [
+    {
+      "id": "list-1744591180892",
+      "type": "list",
+      "timestamp": "2025-04-14T00:39:40.892Z",
+      "path": "debug.json",
+      "title": "List Report"
+    },
+    {
+      "id": "list-1744591180892",
+      "type": "list",
+      "timestamp": "2025-04-14T00:39:40.892Z",
+      "path": "debug-report.json",
+      "title": "List Report"
+    },
+    {
+      "id": "item-1744590588595",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:48.595Z",
+      "path": "item-1-04-13--01-16-24-PM.json",
+      "title": "Immigration Overhaul: Mass Deportations, Border Wall, and Military Deployment"
+    },
+    {
+      "id": "item-1744590586783",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:46.783Z",
+      "path": "item-3-04-13--01-18-52-PM.json",
+      "title": "Project 2025 Tax Reform Agenda: Flat Tax and Corporate Tax Cuts"
+    },
+    {
+      "id": "solana-1744590586781",
+      "type": "solana",
+      "timestamp": "2025-04-14T00:29:46.781Z",
+      "path": "solana-04-13--01-28-42-PM.json",
+      "title": "Solana Report"
+    },
+    {
+      "id": "item-1744590585144",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:45.144Z",
+      "path": "item-2-04-13--01-17-28-PM.json",
+      "title": "Environmental Policy Rollbacks: Exiting Paris Agreement and Promoting Fossil Fuels"
+    },
+    {
+      "id": "ds-1744590585142",
+      "type": "ds",
+      "timestamp": "2025-04-14T00:29:45.142Z",
+      "path": "ds-04-13--01-28-36-PM.json",
+      "title": "DeepSeek Report"
+    },
+    {
+      "id": "item-1744590583504",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:43.504Z",
+      "path": "item-0-04-13--01-14-57-PM.json",
+      "title": "Current Progress of Project 2025: Dismantling Federal Agencies and Restructuring Government Functions"
+    },
+    {
+      "id": "item-1744590581532",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:41.532Z",
+      "path": "item-9-04-13--01-28-29-PM.json",
+      "title": "Law Enforcement Expansion Under Project 2025: Death Penalty and Domestic Military Deployment"
+    },
+    {
+      "id": "list-1744590569067",
+      "type": "list",
+      "timestamp": "2025-04-14T00:29:29.067Z",
+      "path": "list-04-13--01-12-45-PM.json"
+    },
+    {
+      "id": "item-1744590567068",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:27.068Z",
+      "path": "item-8-04-13--01-26-35-PM.json",
+      "title": "Trade and Tariffs: Universal Baseline Tariffs and Targeting China"
+    },
+    {
+      "id": "item-1744590564356",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:24.356Z",
+      "path": "item-7-04-13--01-25-09-PM.json",
+      "title": "Current Progress of Project 2025's Education Reform Agenda: School Choice and Defunding Public Schools"
+    },
+    {
+      "id": "item-1744590562614",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:22.614Z",
+      "path": "item-5-04-13--01-21-38-PM.json",
+      "title": "The Current State of Project 2025’s Social Policies: Anti-LGBTQ+ Measures and Anti-DEI Initiatives"
+    },
+    {
+      "id": "item-1744590560670",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:20.670Z",
+      "path": "item-4-04-13--01-20-12-PM.json",
+      "title": "Civil Service Overhaul: Replacing Merit-Based Workers with Loyalists"
+    },
+    {
+      "id": "item-1744590559164",
+      "type": "item",
+      "timestamp": "2025-04-14T00:29:19.164Z",
+      "path": "item-6-04-13--01-23-26-PM.json",
+      "title": "Abortion and Reproductive Rights Restrictions: Criminalizing Abortion Drugs and Limiting Federal Funding**"
+    }
+  ]
+}

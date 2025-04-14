@@ -1,0 +1,47 @@
+name: Daily Build
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run at midnight every day
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch data
+        run: npm run build
+
+      - name: Process data
+        run: npm run process
+
+      - name: Create index
+        run: npm run create-index
+
+      - name: Build Next.js app
+        run: |
+          cd scripts/nextjs-app
+          npm ci
+          npm run build
+
+      - name: Deploy
+        # Add your deployment steps here
+        # For example, if using Vercel:
+        # uses: amondnet/vercel-action@v20
+        # with:
+        #   vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        #   vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        #   vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        #   vercel-args: '--prod'
+        run: echo "Deployment step - replace with actual deployment command"

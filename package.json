@@ -5,9 +5,13 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun scripts/getData.ts",
+    "build": "run-p build:*",
+    "build:data": "bun scripts/getData.ts",
+    "build:next": "cd nextjs-app && bun build",
+    "dev": "cd nextjs-app && bun dev",
     "test": "vitest run ./**/*.test.ts",
-    "process": "bun scripts/processReports.ts"
+    "process": "bun scripts/processReports.ts",
+    "create-index": "bun scripts/createIndexFile.ts"
   },
   "author": "",
   "license": "ISC",
