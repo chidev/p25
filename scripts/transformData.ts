@@ -209,11 +209,28 @@ ${content}`,
     }
 
     const result = await response.json()
-    const { agendaItems: aiResponse } = JSON.parse(result.choices[0].message.content)
 
+    // Save the raw API response for debugging
     fs.writeFileSync('./reports/debug-list-result.json', JSON.stringify(result, null, 2))
+
+    // Parse the content field if it's a string, otherwise handle it as an object
+    let aiResponse
+    if (typeof result.choices[0].message.content === 'string') {
+      try {
+        const parsedContent = JSON.parse(result.choices[0].message.content)
+        aiResponse = parsedContent.agendaItems
+      } catch (error) {
+        logger.error(`Error parsing AI response: ${error instanceof Error ? error.message : String(error)}`)
+        aiResponse = []
+      }
+    } else {
+      // If content is already an object (not a string), try to access agendaItems directly
+      aiResponse = result.choices[0].message.content?.agendaItems || []
+    }
+    // Save the extracted agenda items for debugging
     fs.writeFileSync('./reports/debug-list-aiResponse.json', JSON.stringify(aiResponse, null, 2))
 
+    // Log the number of agenda items found
     logger.info(`AI analysis identified ${Array.isArray(aiResponse) ? aiResponse.length : 0} agenda items`)
 
     // Map the AI response to AgendaItem objects
@@ -222,14 +239,6 @@ ${content}`,
     if (!Array.isArray(aiResponse)) {
       return []
     }
-
-    console.log('AI response:')
-    console.log('AI response:')
-    console.log('AI response:')
-    console.log('AI response:')
-    console.log('AI response:')
-    console.log('AI response:')
-    console.log('AI response:', aiResponse)
 
     for (const item of aiResponse) {
       // Determine sourceIndices by matching keywords from the item to sources

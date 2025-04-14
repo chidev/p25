@@ -57,8 +57,8 @@
 
 ## 3. Implement data storage
 
-- [ ] Create a `data` directory to store the JSON files
-- [ ] Save each transformed item as a separate JSON file
+- [x] Create a `data` directory to store the JSON files
+- [x] Save each transformed item as a separate JSON file
 - [ ] Create an index file that lists all available items
 
 ## 4. Set up the Next.js project
