@@ -32,8 +32,10 @@ interface Item {
 
 // In App Router, components can be async
 export default async function Detail({ params }: { params: { id: string } }) {
+  // Ensure params is fully resolved before accessing its properties
+  const resolvedParams = await params;
   // Fetch data (replaces getStaticProps)
-  const item = await getItem(params.id);
+  const item = await getItem(resolvedParams.id);
   
   // If item not found, return 404
   if (!item) {
@@ -101,10 +103,6 @@ export default async function Detail({ params }: { params: { id: string } }) {
 // Helper function to get item (replaces getStaticProps)
 async function getItem(id: string): Promise<Item | null> {
   try {
-    console.log(process.cwd())
-    console.log(process.cwd())
-    console.log(process.cwd())
-    console.log(process.cwd())
     // Path to the data directory
     const dataDirServer = path.join(process.cwd(), '../', 'data');
     const dataDirLive = path.join(process.cwd(), 'data');
@@ -117,8 +115,23 @@ async function getItem(id: string): Promise<Item | null> {
     const indexPath = path.join(dataDir, 'index.json');
     const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
 
-    // Find the item in the index
-    const indexItem = indexData.items.find((item: { id: string }) => item.id === id);
+    let indexItem;
+    
+    // Check if the ID is in the format "item-{index}" (e.g., "item-1")
+    if (id.match(/^item-\d+$/)) {
+      // Extract the index number
+      const index = parseInt(id.split('-')[1], 10);
+      
+      // Find items of type "item" and get the one at the specified index
+      const itemsOfTypeItem = indexData.items.filter((item: { type: string }) => item.type === 'item');
+      
+      if (index < itemsOfTypeItem.length) {
+        indexItem = itemsOfTypeItem[index];
+      }
+    } else {
+      // Try to find by exact ID match
+      indexItem = indexData.items.find((item: { id: string }) => item.id === id);
+    }
     
     if (!indexItem) {
       return null;
@@ -144,12 +157,32 @@ export const revalidate = 3600; // Revalidate every hour
 // This replaces getStaticPaths
 export async function generateStaticParams() {
   try {
-    // Path to the index.json file
-    const dataDir = path.join(process.cwd(), '../../..', 'data');
+    // Use the same path resolution logic as getItem
+    const dataDirServer = path.join(process.cwd(), '../', 'data');
+    const dataDirLive = path.join(process.cwd(), 'data');
+
+    const dataDir = fs.existsSync(path.join(dataDirServer, 'index.json')) ? dataDirServer : dataDirLive;
+    
+    console.log({dataDir}); // Log the resolved data directory
+    
     const indexPath = path.join(dataDir, 'index.json');
     
     // Read and parse the index file
     const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+    
+    // Generate params for all items with their actual IDs
+    const actualIdParams = indexData.items.map((item: { id: string }) => ({
+      id: item.id,
+    }));
+    
+    // Generate additional params for "item-{index}" format for items of type "item"
+    const itemsOfTypeItem = indexData.items.filter((item: { type: string }) => item.type === 'item');
+    const indexBasedParams = itemsOfTypeItem.map((_: { id: string; type: string }, index: number) => ({
+      id: `item-${index}`,
+    }));
+    
+    // Combine both sets of params
+    return [...actualIdParams, ...indexBasedParams];
     
     // Generate params for each item
     return indexData.items.map((item: { id: string }) => ({
